@@ -35,13 +35,29 @@ var UIController = (function(){
 // GLOBAL APP CONTROLLER
 var controller = (function(budgetCtrl, UICtrl){
 
-    var DOM = UICtrl.getDOMstrings();
+    var setupEventListeners = function(){
+
+        var DOM = UICtrl.getDOMstrings();
+
+        // Event Listeners
+        document.querySelector(DOM.inputButton).addEventListener('click', ctrlAddItem);
+
+        // Event listener for type
+        document.addEventListener('keypress', function(e){
+
+            if(e.keyCode === 13 || e.which === 13){
+                // e.whitch is for other browsers that simply don't have this keycode property.
+            ctrlAddItem();
+            }
+
+        });
+    }
 
     var ctrlAddItem = function(){
 
         // 1. Get the field input data
         var input = UICtrl.getinput();
-        console.log(input);
+
         // 2. Add the item to the bugdet controller
 
         // 3. Add the item to the UI
@@ -51,19 +67,14 @@ var controller = (function(budgetCtrl, UICtrl){
         // 5. Display the budget on the UI
 
     }
-    
-    // Event Listeners
-    document.querySelector(DOM.inputButton).addEventListener('click', ctrlAddItem);
 
-    // Event listener for type
-    document.addEventListener('keypress', function(e){
-
-        if(e.keyCode === 13 || e.which === 13){
-            // e.whitch is for other browsers that simply don't have this keycode property.
-           ctrlAddItem();
+    return {
+        init: function(){
+            setupEventListeners();
         }
-
-    });
-
+    }
+    
 })(budgetController, UIController);
+
+controller.init();
 
