@@ -14,6 +14,14 @@ var budgetController = (function() {
     this.value = value;
   };
 
+  var calculateTotal = function(type) {
+    var sum = 0;
+    data.allItems[type].forEach(function(cur) {
+      sum += cur.value;
+    });
+    data.totals[type] = sum;
+  };
+
   var data = {
     // Were data will be stored.
     allItems: {
@@ -23,7 +31,9 @@ var budgetController = (function() {
     totals: {
       exp: 0,
       inc: 0
-    }
+    },
+    budget: 0,
+    percentage: -1
   };
 
   return {
@@ -50,6 +60,29 @@ var budgetController = (function() {
       return newItem;
     },
 
+    calculateBudget: function() {
+      //this method will be called in global controller in updateBudget.
+      // Calculate total income and expanses
+      calculateTotal('exp');
+      calculateTotal('inc');
+      // Calculate the budget: income - expenses
+      data.budget = data.totals.inc - data.totals.exp;
+      // Calculate the percentage of income that we spent
+      if (data.totals.inc > 0) {
+        data.percentage = Math.round((data.totals.exp / data.totals.inc) * 100);
+      } else {
+        data.percentage = -1;
+      }
+    },
+    getBudge: function() {
+      //this method will be called in global controller in updateBudget.
+      return {
+        budget: data.budget,
+        totalInc: data.totals.inc,
+        totalExp: data.totals.exp,
+        percentage: data.percentage
+      };
+    },
     testing: function() {
       console.log(data);
     }
@@ -156,15 +189,15 @@ var controller = (function(budgetCtrl, UICtrl) {
 
   var updateBudget = function() {
     // 1. Calculate the budget
-    console.log('nimic');
+    budgetCtrl.calculateBudget();
     // 2. Return the budget
-
+    var budget = budgetCtrl.getBudge();
     // 3. Display the budget on the UI
+    console.log(budget);
   };
 
   var ctrlAddItem = function() {
     var input, newItem;
-
     // 1. Get the field input data
     input = UICtrl.getinput();
 
